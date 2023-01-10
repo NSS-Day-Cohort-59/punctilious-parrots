@@ -27,7 +27,10 @@ namespace TabloidMVC.Controllers
         // GET: Category
         public ActionResult Index()
         {
+            
             var categories = _categoryRepository.GetAll();
+           
+            
             return View(categories);
         }
 
