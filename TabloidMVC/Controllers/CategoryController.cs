@@ -14,36 +14,36 @@ using TabloidMVC.Repositories;
 namespace TabloidMVC.Controllers
 
 {
-    public class CategoreyController : Controller
+    public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategoreyController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
 
 
-        // GET: Categorey
+        // GET: Category
         public ActionResult Index()
         {
             var categories = _categoryRepository.GetAll();
             return View(categories);
         }
 
-        // GET: Categorey/Details/5
+        // GET: Category/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Categorey/Create
+        // GET: Category/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Categorey/Create
+        // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -58,13 +58,13 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        // GET: Categorey/Edit/5
+        // GET: Category/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Categorey/Edit/5
+        // POST: Category/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -79,13 +79,13 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        // GET: Categorey/Delete/5
+        // GET: Category/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Categorey/Delete/5
+        // POST: Category/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
