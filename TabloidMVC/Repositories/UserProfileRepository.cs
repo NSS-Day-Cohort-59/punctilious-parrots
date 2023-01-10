@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using TabloidMVC.Models;
 using TabloidMVC.Utils;
 
@@ -55,6 +57,43 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public List<UserProfile> GetUsers()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    SELECT
+                    UserProfile.Id 'ID',
+                    FirstName,
+                    LastName,
+                    DisplayName,
+                    Email,
+                    ImageLocation,
+                    CreateDateTime,
+                    UserTypeId,
+                    UserType.Name 'User Type'
+                    FROM UserProfile
+                    LEFT JOIN UserType
+                    ON UserProfile.UserTypeId = UserType.Id
+                    ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        List<UserProfile> users = new List<UserProfile>();
+
+                        while (reader.Read())
+                        {
+                            users.Add(NewUserFromReader(reader));
+                        }
+                        return users;
+                    }
+                }
+            }
+        }
+
         public void Add(UserProfile newUser)
         {
             using (var conn = Connection)
@@ -93,6 +132,24 @@ namespace TabloidMVC.Repositories
                     newUser.Id = (int)cmd.ExecuteScalar();
                 }
             }
+        }
+
+        private UserProfile NewUserFromReader(SqlDataReader reader)
+        {
+            return new UserProfile
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("ID")),
+                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
+                Email = reader.GetString(reader.GetOrdinal("Email")),
+                CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
+                UserType = new UserType
+                {
+                    Name = reader.GetString(reader.GetOrdinal("User Type"))
+                }
+            };
         }
     }
 }
