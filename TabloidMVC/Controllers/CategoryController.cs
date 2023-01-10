@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -43,63 +44,81 @@ namespace TabloidMVC.Controllers
         // GET: Category/Create
         public ActionResult Create()
         {
+           
             return View();
         }
 
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(Category category)
         {
+
             try
             {
+                _categoryRepository.AddCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(category);
             }
+
         }
 
+        [Authorize]
         // GET: Category/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            Category category = _categoryRepository.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
         }
 
         // POST: Category/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Category category)
         {
             try
             {
+                _categoryRepository.UpdateCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(category);
             }
         }
 
         // GET: Category/Delete/5
+        [Authorize]
         public ActionResult Delete(int id)
         {
-            return View();
+            Category category = _categoryRepository.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
         }
 
         // POST: Category/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Category category)
         {
             try
             {
+                _categoryRepository.DeleteCategory(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(category);
             }
         }
     }
