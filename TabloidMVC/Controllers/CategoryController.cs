@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -43,22 +44,26 @@ namespace TabloidMVC.Controllers
         // GET: Category/Create
         public ActionResult Create()
         {
+           
             return View();
         }
 
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(Category category)
         {
+
             try
             {
+                _categoryRepository.AddCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(category);
             }
+
         }
 
         // GET: Category/Edit/5
