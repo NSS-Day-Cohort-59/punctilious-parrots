@@ -40,6 +40,37 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public Tag GetTagById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, Name
+                                        FROM Tag
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Tag
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name"))
+                            };
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
+
         public void AddTag(Tag tag)
         {
             using (SqlConnection conn = Connection)
@@ -50,6 +81,25 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"INSERT INTO Tag (Name)
                                         VALUES (@name)";
                     cmd.Parameters.AddWithValue("@name", tag.Name);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateTag(Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE Tag
+                                        SET 
+                                            [Name] = @name
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
+                    cmd.Parameters.AddWithValue("@id", tag.Id);
 
                     cmd.ExecuteNonQuery();
                 }
