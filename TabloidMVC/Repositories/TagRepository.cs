@@ -56,11 +56,7 @@ namespace TabloidMVC.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new Tag
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                Name = reader.GetString(reader.GetOrdinal("Name"))
-                            };
+                            return NewTagFromReader(reader);
                         }
                         else
                         {
@@ -94,6 +90,7 @@ namespace TabloidMVC.Repositories
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
+
                     cmd.CommandText = @"UPDATE Tag
                                         SET 
                                             [Name] = @name
@@ -105,6 +102,23 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+        public void DeleteTag(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM Tag
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
 
         private Tag NewTagFromReader(SqlDataReader reader)
         {
