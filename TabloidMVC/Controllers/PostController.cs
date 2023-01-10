@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
+using System.Collections.Generic;
 using System.Security.Claims;
+using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 
@@ -23,6 +25,14 @@ namespace TabloidMVC.Controllers
         public IActionResult Index()
         {
             var posts = _postRepository.GetAllPublishedPosts();
+            return View(posts);
+        }
+
+        [Authorize]
+        public IActionResult IndexMyPosts()
+        {
+            int userId = GetCurrentUserProfileId();
+            List<Post> posts = _postRepository.GetAllPostsByUserId(userId);
             return View(posts);
         }
 
