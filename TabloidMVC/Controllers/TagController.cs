@@ -1,16 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using TabloidMVC.Models;
+using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
 {
     public class TagController : Controller
     {
-        private readonly 
+        private readonly ITagRepository _tagRepository;
+
+        public TagController(ITagRepository tagRepository)
+        {
+            _tagRepository = tagRepository;
+        }
+
+
         // GET: TagController
         public ActionResult Index()
         {
-
-            return View();
+            List<Tag> tags = _tagRepository.GetAllTags();
+            return View(tags);
         }
 
         // GET: TagController/Details/5
@@ -20,6 +31,7 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: TagController/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
@@ -28,15 +40,16 @@ namespace TabloidMVC.Controllers
         // POST: TagController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Tag tag)
         {
             try
             {
+                _tagRepository.AddTag(tag);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(tag);
             }
         }
 
