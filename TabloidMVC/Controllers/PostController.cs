@@ -135,7 +135,7 @@ namespace TabloidMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             catch
-            {//try to create a 404 if catch happensS
+            {//try to create a 404 if catch happens
                 return View(post);
             }
         }
