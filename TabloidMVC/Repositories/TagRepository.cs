@@ -114,6 +114,11 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@id", id);
 
                     cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"DELETE FROM PostTag
+                                        WHERE TagId = @id";
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
