@@ -173,6 +173,38 @@ namespace TabloidMVC.Repositories
             }
         }    
 
+        public void UpdateUser(UserProfile userProfile)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText = @"
+                                    UPDATE UserProfile
+                                    SET 
+                                    FirstName = @FirstName,
+                                    LastName = @LastName,
+                                    DisplayName = @DisplayName,
+                                    Email = @Email,
+                                    ImageLocation = @ImageLocation,
+                                    UserTypeId = @UserTypeId
+
+                                    WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@FirstName", userProfile.FirstName);
+                    cmd.Parameters.AddWithValue("@LastName", userProfile.LastName);
+                    cmd.Parameters.AddWithValue("@DisplayName", userProfile.DisplayName);
+                    cmd.Parameters.AddWithValue("@Email", userProfile.Email);
+                    cmd.Parameters.AddWithValue("@id", userProfile.Id);
+                    cmd.Parameters.AddWithValue("@ImageLocation", userProfile.ImageLocation);
+                    cmd.Parameters.AddWithValue("@UserTypeId", userProfile.UserTypeId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         private UserProfile NewUserFromReader(SqlDataReader reader)
         {
             
