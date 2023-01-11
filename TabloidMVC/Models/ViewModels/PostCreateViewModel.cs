@@ -8,3 +8,4 @@ namespace TabloidMVC.Models.ViewModels
         public List<Category> CategoryOptions { get; set; }
     }
 }
+

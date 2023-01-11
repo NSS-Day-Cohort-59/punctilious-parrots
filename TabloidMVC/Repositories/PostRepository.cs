@@ -172,7 +172,7 @@ namespace TabloidMVC.Repositories
             }
         }
 
-
+// ask teammates - should we return a result? if so what kind?(id, class , etc)
         public void Add(Post post)
         {
             using (var conn = Connection)
@@ -237,5 +237,53 @@ namespace TabloidMVC.Repositories
                 }
             };
         }
+        //TO DO: ask teammates what we want to return in this function 
+        public bool DeletePost(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM Post
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                  return cmd.ExecuteNonQuery() > 0;
+                    
+                }
+            }
+        }
+//what do we do about closing the connection? do we need to close it?
+/// <summary>
+///  
+/// </summary>
+/// <param name="post"></param>
+/// <returns></returns>
+        public bool UpdatePost(Post post)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText = @"UPDATE Post
+                                        SET 
+                                            Title = @Title,
+                                            Content = @Content,
+                                            ImageLocation = @ImageLocation
+
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@Title", post.Title);
+                    cmd.Parameters.AddWithValue("@id", post.Id);
+                    cmd.Parameters.AddWithValue("@Content", post.Content);
+                    cmd.Parameters.AddWithValue("@ImageLocation", post.ImageLocation);
+
+                   return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
     }
 }
