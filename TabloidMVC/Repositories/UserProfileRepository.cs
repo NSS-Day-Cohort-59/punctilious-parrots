@@ -134,9 +134,49 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public UserProfile GetUserById(int userId)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    SELECT
+                    UserProfile.Id 'ID',
+                    FirstName,
+                    LastName,
+                    DisplayName,
+                    Email,
+                    ImageLocation,
+                    CreateDateTime,
+                    UserTypeId,
+                    UserType.Name 'User Type'
+                    FROM UserProfile
+                    LEFT JOIN UserType
+                    ON UserProfile.UserTypeId = UserType.Id
+                    WHERE UserProfile.Id = @UserId
+                    ";
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    
+                    
+                    var reader = cmd.ExecuteReader();
+                    UserProfile userProfile = null;
+
+                    if (reader.Read())
+                    {
+                        userProfile = NewUserFromReader(reader);
+                    }
+                    reader.Close();
+                    return userProfile;
+                }
+            }
+        }    
+
         private UserProfile NewUserFromReader(SqlDataReader reader)
         {
-            return new UserProfile
+            
+            UserProfile newUser = new UserProfile
             {
                 Id = reader.GetInt32(reader.GetOrdinal("ID")),
                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
@@ -150,6 +190,11 @@ namespace TabloidMVC.Repositories
                     Name = reader.GetString(reader.GetOrdinal("User Type"))
                 }
             };
+            if (newUser.ImageLocation == null)
+            {
+                newUser.ImageLocation = "https://villagesonmacarthur.com/wp-content/uploads/2020/12/Blank-Avatar.png";
+            }
+            return newUser;
         }
     }
 }
