@@ -83,6 +83,13 @@ namespace TabloidMVC.Controllers
             return View(users);
         }
 
+        public IActionResult Details(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserById(id);
+
+            return View(userProfile);
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
