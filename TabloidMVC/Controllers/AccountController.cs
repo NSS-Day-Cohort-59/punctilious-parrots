@@ -88,5 +88,10 @@ namespace TabloidMVC.Controllers
             await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult Deactivate(int id)
+        {
+            UserProfile user = _userProfileRepository.
+        }
     }
 }
