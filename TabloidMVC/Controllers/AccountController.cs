@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TabloidMVC.Models;
+using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
@@ -13,10 +14,13 @@ namespace TabloidMVC.Controllers
     public class AccountController : Controller
     {
         private readonly IUserProfileRepository _userProfileRepository;
+        private readonly IUserTypeRepository _userTypeRepository;
 
-        public AccountController(IUserProfileRepository userProfileRepository)
+        public AccountController(IUserProfileRepository userProfileRepository,
+            IUserTypeRepository userTypeRepository)
         {
             _userProfileRepository = userProfileRepository;
+            _userTypeRepository = userTypeRepository;
         }
 
         public IActionResult Login()
@@ -77,17 +81,53 @@ namespace TabloidMVC.Controllers
             }
         }
 
+        // GET: list of all users (admin only)
         public IActionResult Index()
         {
             List<UserProfile> users = _userProfileRepository.GetUsers();
             return View(users);
         }
 
+        // GET: User details
         public IActionResult Details(int id)
         {
             UserProfile userProfile = _userProfileRepository.GetUserById(id);
 
             return View(userProfile);
+        }
+
+        // GET: Edit User Form
+        public IActionResult Edit(int id)
+        {
+            UserProfileEditViewModel vm = new UserProfileEditViewModel
+            {
+                UserProfile = _userProfileRepository.GetUserById(id),
+                UserTypes = _userTypeRepository.GetUserTypes()
+            };
+            if (vm.UserProfile != null)
+            {
+                return View(vm);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        // POST: Edit User Form
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(UserProfileEditViewModel vm)
+        {
+            try
+            {
+                _userProfileRepository.UpdateUser(vm.UserProfile);
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View(vm);
+            }
         }
 
         public async Task<IActionResult> Logout()

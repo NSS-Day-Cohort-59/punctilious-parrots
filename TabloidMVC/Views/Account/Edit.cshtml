@@ -1,0 +1,63 @@
+﻿@model TabloidMVC.Models.ViewModels.UserProfileEditViewModel;
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="text-center">Edit User</h1>
+
+<h4 class="m-5">@Model.UserProfile.FullName</h4>
+<hr />
+<div class="row m-5">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="@Model.UserProfile.Id" type="hidden" />
+            <div class="form-group">
+                <label asp-for="@Model.UserProfile.FirstName" class="control-label"></label>
+                <input asp-for="@Model.UserProfile.FirstName" class="form-control" />
+                <span asp-validation-for="@Model.UserProfile.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.UserProfile.LastName" class="control-label"></label>
+                <input asp-for="@Model.UserProfile.LastName" class="form-control" />
+                <span asp-validation-for="@Model.UserProfile.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.UserProfile.DisplayName" class="control-label"></label>
+                <input asp-for="@Model.UserProfile.DisplayName" class="form-control" />
+                <span asp-validation-for="@Model.UserProfile.DisplayName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.UserProfile.Email" class="control-label"></label>
+                <input asp-for="@Model.UserProfile.Email" class="form-control" />
+                <span asp-validation-for="@Model.UserProfile.Email" class="text-danger"></span>
+            </div>
+            <input asp-for="@Model.UserProfile.CreateDateTime" type="hidden" />
+            <div class="form-group">
+                <label asp-for="@Model.UserProfile.ImageLocation" class="control-label"></label>
+                <input asp-for="@Model.UserProfile.ImageLocation" class="form-control" />
+                <span asp-validation-for="@Model.UserProfile.ImageLocation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <select asp-for="@Model.UserProfile.UserTypeId">
+                @foreach (UserType type in Model.UserTypes)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="m-5">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -10,5 +10,8 @@ namespace TabloidMVC.Repositories
         List<Post> GetAllPostsByUserId(int userId);
         Post GetPublishedPostById(int id);
         Post GetUserPostById(int id, int userProfileId);
+
+        bool UpdatePost(Post post);
+        bool DeletePost(int id);
     }
 }

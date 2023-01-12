@@ -164,8 +164,8 @@ namespace TabloidMVC.Repositories
                     WHERE UserProfile.Id = @UserId
                     ";
                     cmd.Parameters.AddWithValue("@UserId", userId);
-                    
-                    
+
+
                     var reader = cmd.ExecuteReader();
                     UserProfile userProfile = null;
 
@@ -178,7 +178,7 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-        
+
         public void UpdateUser(UserProfile user)
         {
             using (SqlConnection conn = Connection)
@@ -211,9 +211,11 @@ namespace TabloidMVC.Repositories
             }
         }
 
+
+
         private UserProfile NewUserFromReader(SqlDataReader reader)
         {
-            
+
             UserProfile newUser = new UserProfile
             {
                 Id = reader.GetInt32(reader.GetOrdinal("ID")),
