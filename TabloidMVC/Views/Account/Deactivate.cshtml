@@ -1,21 +1,16 @@
 ﻿@model TabloidMVC.Models.UserProfile
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Deactivate";
 }
 
-<h1 class="text-center">Details</h1>
+<h1>Deactivate</h1>
 
-<div class="ml-5">
-    <h4>@Model.FullName</h4>
+<h3>Are you sure you want to deactivate @Model.FullName?</h3>
+<div>
+    <h4>UserProfile</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageLocation)
-        </dt>
-        <dd class="col-sm-10">
-            <img height="250" width="250" src="@Model.ImageLocation" alt="avatar" />
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Id)
         </dt>
@@ -52,11 +47,11 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.CreateDateTime)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Activated)
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageLocation)
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Activated)
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ImageLocation)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UserType)
@@ -64,9 +59,32 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.UserType.Name)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Activated)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Activated)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
     </dl>
-</div>
-<div class="ml-5">
-    @Html.ActionLink("Edit", "Edit", new {  /* id = Model.Id */ }) |
-    <a asp-action="Index">Back to List</a>
+    
+    
+    <form asp-action="Deactivate">
+        <input asp-for="Id" hidden/>
+        <input asp-for="FirstName" hidden />
+        <input asp-for="LastName" hidden />
+        <input asp-for="DisplayName" hidden />
+        <input asp-for="Email" hidden />
+        <input asp-for="CreateDateTime" hidden />
+        <input asp-for="ImageLocation" hidden />
+        <input asp-for="UserTypeId" hidden />
+        <input asp-for="Activated" hidden />
+        <input type="submit" value="Deactivate" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
 </div>

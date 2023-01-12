@@ -20,7 +20,7 @@ namespace TabloidMVC.Repositories
                 {
                     cmd.CommandText = @"
                        SELECT u.id, u.FirstName, u.LastName, u.DisplayName, u.Email,
-                              u.CreateDateTime, u.ImageLocation, u.UserTypeId,
+                              u.CreateDateTime, u.ImageLocation, u.UserTypeId, u.Activated,
                               ut.[Name] AS UserTypeName
                          FROM UserProfile u
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
@@ -47,6 +47,7 @@ namespace TabloidMVC.Repositories
                                 Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
                                 Name = reader.GetString(reader.GetOrdinal("UserTypeName"))
                             },
+                            Activated = reader.GetBoolean(reader.GetOrdinal("Activated"))
                         };
                     }
 
@@ -73,6 +74,7 @@ namespace TabloidMVC.Repositories
                     Email,
                     ImageLocation,
                     CreateDateTime,
+                    Activated,
                     UserTypeId,
                     UserType.Name 'User Type'
                     FROM UserProfile
@@ -109,6 +111,7 @@ namespace TabloidMVC.Repositories
                             Email,
                             ImageLocation,
                             CreateDateTime,
+                            Activated,
                             UserTypeId
                             )
                         OUTPUT INSERTED.ID
@@ -119,6 +122,7 @@ namespace TabloidMVC.Repositories
                             @Email,
                             @ImageLocation,
                             @CreateDateTime,
+                            @Activated,
                             @UserTypeId
                             )";
                     cmd.Parameters.AddWithValue("@FirstName", newUser.FirstName);
@@ -127,6 +131,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@Email", newUser.Email);
                     cmd.Parameters.AddWithValue("@ImageLocation", DbUtils.ValueOrDBNull(newUser.ImageLocation));
                     cmd.Parameters.AddWithValue("@CreateDateTime", newUser.CreateDateTime);
+                    cmd.Parameters.AddWithValue("@Activated", 1);
                     cmd.Parameters.AddWithValue("@UserTypeId", newUser.UserTypeId);
 
                     newUser.Id = (int)cmd.ExecuteScalar();
@@ -150,6 +155,7 @@ namespace TabloidMVC.Repositories
                     Email,
                     ImageLocation,
                     CreateDateTime,
+                    Activated,
                     UserTypeId,
                     UserType.Name 'User Type'
                     FROM UserProfile
@@ -171,7 +177,39 @@ namespace TabloidMVC.Repositories
                     return userProfile;
                 }
             }
-        }    
+        }
+        
+        public void UpdateUser(UserProfile user)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE UserProfile
+                                        SET FirstName = @firstName,
+                                            LastName = @lastName,
+                                            DisplayName = @displayName,
+                                            Email = @email,
+                                            ImageLocation = @imageLocation,
+                                            CreateDateTime = @createDateTime,
+                                            Activated = @activated,
+                                            UserTypeId = @userTypeId
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
+                    cmd.Parameters.AddWithValue("@LastName", user.LastName);
+                    cmd.Parameters.AddWithValue("@DisplayName", user.DisplayName);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@ImageLocation", user.ImageLocation);
+                    cmd.Parameters.AddWithValue("@CreateDateTime", user.CreateDateTime);
+                    cmd.Parameters.AddWithValue("@Activated", user.Activated);
+                    cmd.Parameters.AddWithValue("@UserTypeId", user.UserTypeId);
+                    cmd.Parameters.AddWithValue("@id", user.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
         private UserProfile NewUserFromReader(SqlDataReader reader)
         {
@@ -185,10 +223,12 @@ namespace TabloidMVC.Repositories
                 Email = reader.GetString(reader.GetOrdinal("Email")),
                 CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                 ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
+                UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
                 UserType = new UserType
                 {
                     Name = reader.GetString(reader.GetOrdinal("User Type"))
-                }
+                },
+                Activated = reader.GetBoolean(reader.GetOrdinal("Activated"))
             };
             if (newUser.ImageLocation == null)
             {
