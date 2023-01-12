@@ -154,5 +154,30 @@ namespace TabloidMVC.Controllers
             _userProfileRepository.UpdateUser(user);
             return RedirectToAction("Index");
         }
+
+        public IActionResult ViewDeactivated()
+        {
+            List<UserProfile> users = _userProfileRepository.GetDeactivatedUsers();
+            return View(users);
+        }
+
+        public IActionResult Reactivate(int id)
+        {
+            UserProfile user = _userProfileRepository.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Reactivate(UserProfile user)
+        {
+            user.Activated = true;
+            _userProfileRepository.UpdateUser(user);
+            return RedirectToAction("ViewDeactivated");
+        }
     }
 }

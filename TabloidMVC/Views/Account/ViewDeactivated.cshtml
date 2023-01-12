@@ -1,12 +1,13 @@
 ﻿@model IEnumerable<TabloidMVC.Models.UserProfile>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ViewDeactivated";
 }
 
-<h1 class="text-center">User Index</h1>
-<a asp-action="ViewDeactivated">View Deactivated</a>
-<table class="table m-3">
+<h1>Deactivated Users</h1>
+<a asp-action="Index">Back to Activated Users</a>
+
+<table class="table">
     <thead>
         <tr>
             <th>
@@ -28,13 +29,16 @@
                 @Html.DisplayNameFor(model => model.CreateDateTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Activated)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.ImageLocation)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserType.Name)
+                @Html.DisplayNameFor(model => model.UserTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Activated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
             </th>
             <th></th>
         </tr>
@@ -61,19 +65,22 @@
                 @Html.DisplayFor(modelItem => item.CreateDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Activated)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.ImageLocation)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UserType.Name)
+                @Html.DisplayFor(modelItem => item.UserTypeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Activated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
                 @Html.ActionLink("Details", "Details", new { id=item.Id }) |
                 @Html.ActionLink("Delete", "Delete", new { id=item.Id }) |
-                @Html.ActionLink("Deactivate", "Deactivate", new {id=item.Id})
+                @Html.ActionLink("Reactivate", "Reactivate", new {id = item.Id})
             </td>
         </tr>
 }
