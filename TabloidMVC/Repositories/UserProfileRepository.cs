@@ -80,6 +80,7 @@ namespace TabloidMVC.Repositories
                     FROM UserProfile
                     LEFT JOIN UserType
                     ON UserProfile.UserTypeId = UserType.Id
+                    ORDER BY DisplayName
                     ";
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
