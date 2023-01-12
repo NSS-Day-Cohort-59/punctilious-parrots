@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace TabloidMVC.Models.ViewModels
 {
@@ -6,5 +7,6 @@ namespace TabloidMVC.Models.ViewModels
     {
         public UserProfile UserProfile { get; set; }
         public List<UserType> UserTypes { get; set; }
+        public IFormFile Image { get; set; }
     }
 }

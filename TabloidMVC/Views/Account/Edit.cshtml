@@ -10,7 +10,7 @@
 <hr />
 <div class="row m-5">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form enctype="multipart/form-data" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input asp-for="@Model.UserProfile.Id" type="hidden" />
             <div class="form-group">
@@ -35,9 +35,8 @@
             </div>
             <input asp-for="@Model.UserProfile.CreateDateTime" type="hidden" />
             <div class="form-group">
-                <label asp-for="@Model.UserProfile.ImageLocation" class="control-label"></label>
-                <input asp-for="@Model.UserProfile.ImageLocation" class="form-control" />
-                <span asp-validation-for="@Model.UserProfile.ImageLocation" class="text-danger"></span>
+                <label asp-for="@Model.Image" class="control-label"></label>
+                <input asp-for="@Model.Image" class="form-control" type="file"/>
             </div>
             <div class="form-group">
                 <select asp-for="@Model.UserProfile.UserTypeId">

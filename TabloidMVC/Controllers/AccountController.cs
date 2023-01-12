@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
+using System;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Linq;
 
 namespace TabloidMVC.Controllers
 {
@@ -117,14 +121,24 @@ namespace TabloidMVC.Controllers
         // POST: Edit User Form
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(UserProfileEditViewModel vm)
+        public async Task<IActionResult> Edit(UserProfileEditViewModel vm)
         {
             try
             {
+                if (vm.Image.Length > 0)
+                {
+                       var filePath = Path.Combine("wwwroot", "images", Path.GetRandomFileName());
+
+                       using (var stream = System.IO.File.Create(filePath))
+                       {
+                           await vm.Image.CopyToAsync(stream);
+                       }
+                       vm.UserProfile.ImageLocation = filePath;
+                }
                 _userProfileRepository.UpdateUser(vm.UserProfile);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
                 return View(vm);
             }
@@ -179,5 +193,14 @@ namespace TabloidMVC.Controllers
             _userProfileRepository.UpdateUser(user);
             return RedirectToAction("ViewDeactivated");
         }
+
+        /* [HttpGet]
+        public IActionResult Images(string id)
+        {
+            using (FileStream fs = System.IO.File.Open($"wwwroot/images/{id}", FileMode.Open))
+            {
+                return File(fs, "image/jpg");
+            }
+        } */
     }
 }
