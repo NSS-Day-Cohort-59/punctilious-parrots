@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Policy;
 
 namespace TabloidMVC.Models
 {
@@ -20,6 +21,7 @@ namespace TabloidMVC.Models
         public string ImageLocation { get; set; }
         public int UserTypeId { get; set; }
         public UserType UserType { get; set; }
+        public bool Activated { get; set; } = true;
         public string FullName
         {
             get

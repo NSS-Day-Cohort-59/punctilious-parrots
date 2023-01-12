@@ -33,7 +33,7 @@ namespace TabloidMVC.Controllers
         {
             var userProfile = _userProfileRepository.GetByEmail(credentials.Email);
 
-            if (userProfile == null)
+            if (userProfile == null || userProfile.Activated == false)
             {
                 ModelState.AddModelError("Email", "Invalid email");
                 return View();
@@ -134,6 +134,25 @@ namespace TabloidMVC.Controllers
         {
             await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Deactivate(int id)
+        {
+            UserProfile user = _userProfileRepository.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Deactivate(UserProfile user)
+        {
+            user.Activated = false;
+            _userProfileRepository.UpdateUser(user);
+            return RedirectToAction("Index");
         }
     }
 }
