@@ -102,10 +102,19 @@ namespace TabloidMVC.Controllers
             UserProfileEditViewModel vm = new UserProfileEditViewModel
             {
                 UserProfile = _userProfileRepository.GetUserById(id),
-                UserTypes = _userTypeRepository.GetUserTypes()
+                UserTypes = _userTypeRepository.GetUserTypes(),
+                IsSafeToEditUserType = true
             };
             if (vm.UserProfile != null)
             {
+                if (vm.UserProfile.UserTypeId == 1)
+                {
+                    List<UserProfile> admins = _userProfileRepository.GetAdmins();
+                    if (admins.Count < 2)
+                    {
+                        vm.IsSafeToEditUserType = false;
+                    }
+                }
                 return View(vm);
             }
             else
@@ -119,6 +128,11 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(UserProfileEditViewModel vm)
         {
+            if (vm.IsSafeToEditUserType == false && vm.UserProfile.UserTypeId != 1)
+            {
+                vm.IsSafeToEditUserType = true;
+                return RedirectToAction("LastAdminError");
+            }
             try
             {
                 _userProfileRepository.UpdateUser(vm.UserProfile);
@@ -150,6 +164,14 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Deactivate(UserProfile user)
         {
+            if (user.UserTypeId == 1)
+            {
+                List<UserProfile> admins = _userProfileRepository.GetAdmins();
+                if (admins.Count < 2)
+                {
+                    return RedirectToAction("LastAdminError");
+                }
+            }
             user.Activated = false;
             _userProfileRepository.UpdateUser(user);
             return RedirectToAction("Index");
@@ -178,6 +200,11 @@ namespace TabloidMVC.Controllers
             user.Activated = true;
             _userProfileRepository.UpdateUser(user);
             return RedirectToAction("ViewDeactivated");
+        }
+
+        public IActionResult LastAdminError()
+        {
+            return View();
         }
     }
 }

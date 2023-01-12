@@ -13,6 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input asp-for="@Model.UserProfile.Id" type="hidden" />
+                <input asp-for="@Model.IsSafeToEditUserType" type="hidden" />
             <div class="form-group">
                 <label asp-for="@Model.UserProfile.FirstName" class="control-label"></label>
                 <input asp-for="@Model.UserProfile.FirstName" class="form-control" />
