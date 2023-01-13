@@ -47,12 +47,7 @@ namespace TabloidMVC
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-            Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images")),
-                RequestPath = "/images"
-            });
+            app.UseStaticFiles();
 
             app.UseRouting();
 
