@@ -106,10 +106,19 @@ namespace TabloidMVC.Controllers
             UserProfileEditViewModel vm = new UserProfileEditViewModel
             {
                 UserProfile = _userProfileRepository.GetUserById(id),
-                UserTypes = _userTypeRepository.GetUserTypes()
+                UserTypes = _userTypeRepository.GetUserTypes(),
+                IsSafeToEditUserType = true
             };
             if (vm.UserProfile != null)
             {
+                if (vm.UserProfile.UserTypeId == 1)
+                {
+                    List<UserProfile> admins = _userProfileRepository.GetAdmins();
+                    if (admins.Count < 2)
+                    {
+                        vm.IsSafeToEditUserType = false;
+                    }
+                }
                 return View(vm);
             }
             else
@@ -123,6 +132,11 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserProfileEditViewModel vm)
         {
+            if (vm.IsSafeToEditUserType == false && vm.UserProfile.UserTypeId != 1)
+            {
+                vm.IsSafeToEditUserType = true;
+                return RedirectToAction("LastAdminError");
+            }
             try
             {
                 if (vm.Image.Length > 0)
@@ -164,6 +178,14 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Deactivate(UserProfile user)
         {
+            if (user.UserTypeId == 1)
+            {
+                List<UserProfile> admins = _userProfileRepository.GetAdmins();
+                if (admins.Count < 2)
+                {
+                    return RedirectToAction("LastAdminError");
+                }
+            }
             user.Activated = false;
             _userProfileRepository.UpdateUser(user);
             return RedirectToAction("Index");
@@ -202,5 +224,9 @@ namespace TabloidMVC.Controllers
                 return File(fs, "image/jpg");
             }
         } */
+        public IActionResult LastAdminError()
+        {
+            return View();
+        }
     }
 }

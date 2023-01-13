@@ -98,6 +98,45 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public List<UserProfile> GetAdmins() 
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    SELECT
+                    UserProfile.Id 'ID',
+                    FirstName,
+                    LastName,
+                    DisplayName,
+                    Email,
+                    ImageLocation,
+                    CreateDateTime,
+                    Activated,
+                    UserTypeId,
+                    UserType.Name 'User Type'
+                    FROM UserProfile
+                    LEFT JOIN UserType
+                    ON UserProfile.UserTypeId = UserType.Id
+                    WHERE Activated = 1 AND UserType.Name = 'Admin'
+                    ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        List<UserProfile> users = new List<UserProfile>();
+
+                        while (reader.Read())
+                        {
+                            users.Add(NewUserFromReader(reader));
+                        }
+                        return users;
+                    }
+                }
+            }
+        }
+
         public List<UserProfile> GetDeactivatedUsers()
         {
             using (var conn = Connection)

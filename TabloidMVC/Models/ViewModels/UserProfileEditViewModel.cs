@@ -8,5 +8,6 @@ namespace TabloidMVC.Models.ViewModels
         public UserProfile UserProfile { get; set; }
         public List<UserType> UserTypes { get; set; }
         public IFormFile Image { get; set; }
+        public bool IsSafeToEditUserType { get; set; }
     }
 }
