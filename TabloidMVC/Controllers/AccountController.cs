@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
+using System;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TabloidMVC.Controllers
 {
@@ -82,21 +87,39 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: list of all users (admin only)
+        [Authorize]
         public IActionResult Index()
         {
-            List<UserProfile> users = _userProfileRepository.GetUsers();
-            return View(users);
+            if (User.IsInRole("Admin"))
+            {
+                List<UserProfile> users = _userProfileRepository.GetUsers();
+                return View(users);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: User details
+        [Authorize]
         public IActionResult Details(int id)
         {
-            UserProfile userProfile = _userProfileRepository.GetUserById(id);
+            int userId = GetCurrentUserProfileId();
+            if (User.IsInRole("Admin") || userId == id)
+            {
+                UserProfile userProfile = _userProfileRepository.GetUserById(id);
 
-            return View(userProfile);
+                return View(userProfile);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Edit User Form
+        [Authorize]
         public IActionResult Edit(int id)
         {
             UserProfileEditViewModel vm = new UserProfileEditViewModel
@@ -126,7 +149,7 @@ namespace TabloidMVC.Controllers
         // POST: Edit User Form
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(UserProfileEditViewModel vm)
+        public async Task<IActionResult> Edit(UserProfileEditViewModel vm)
         {
             if (vm.IsSafeToEditUserType == false && vm.UserProfile.UserTypeId != 1)
             {
@@ -135,10 +158,21 @@ namespace TabloidMVC.Controllers
             }
             try
             {
+                if (vm.Image.Length > 0)
+                {
+                    var fileName = Guid.NewGuid();
+                    var filePath = Path.Combine("wwwroot", "images", $"{fileName}.jpg");
+                       
+                    using (var stream = System.IO.File.Create(filePath))
+                       {
+                           await vm.Image.CopyToAsync(stream);
+                       }
+                       vm.UserProfile.ImageLocation = $"/images/{fileName}.jpg";
+                }
                 _userProfileRepository.UpdateUser(vm.UserProfile);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
                 return View(vm);
             }
@@ -150,6 +184,7 @@ namespace TabloidMVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
         public IActionResult Deactivate(int id)
         {
             UserProfile user = _userProfileRepository.GetUserById(id);
@@ -160,6 +195,7 @@ namespace TabloidMVC.Controllers
             return View(user);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Deactivate(UserProfile user)
@@ -177,12 +213,14 @@ namespace TabloidMVC.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public IActionResult ViewDeactivated()
         {
             List<UserProfile> users = _userProfileRepository.GetDeactivatedUsers();
             return View(users);
         }
 
+        [Authorize]
         public IActionResult Reactivate(int id)
         {
             UserProfile user = _userProfileRepository.GetUserById(id);
@@ -202,9 +240,16 @@ namespace TabloidMVC.Controllers
             return RedirectToAction("ViewDeactivated");
         }
 
+        [Authorize]
         public IActionResult LastAdminError()
         {
             return View();
+        }
+
+        private int GetCurrentUserProfileId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
         }
     }
 }

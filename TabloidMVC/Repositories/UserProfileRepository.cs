@@ -81,6 +81,7 @@ namespace TabloidMVC.Repositories
                     LEFT JOIN UserType
                     ON UserProfile.UserTypeId = UserType.Id
                     WHERE Activated = 1
+                    ORDER BY DisplayName
                     ";
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -279,7 +280,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@LastName", user.LastName);
                     cmd.Parameters.AddWithValue("@DisplayName", user.DisplayName);
                     cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@ImageLocation", user.ImageLocation);
+                    cmd.Parameters.AddWithValue("@imageLocation", user.ImageLocation);
                     cmd.Parameters.AddWithValue("@CreateDateTime", user.CreateDateTime);
                     cmd.Parameters.AddWithValue("@Activated", user.Activated);
                     cmd.Parameters.AddWithValue("@UserTypeId", user.UserTypeId);
